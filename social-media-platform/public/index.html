@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusSocial - Modern Social Media Platform</title>
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <i class="fa-solid fa-shapes logo-icon"></i>
+        <span class="brand-name">Nexus<span class="brand-highlight">Social</span></span>
+      </div>
+      
+      <div class="nav-search">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" placeholder="Search posts, creators..." id="searchInput">
+      </div>
+
+      <div class="nav-actions">
+        <!-- Logged Out Actions -->
+        <div id="authNavButtons" class="auth-buttons">
+          <button class="btn btn-outline" id="openLoginBtn">Login</button>
+          <button class="btn btn-primary" id="openSignupBtn">Sign Up</button>
+        </div>
+
+        <!-- Logged In User Profile Icon & Menu -->
+        <div id="userProfileNav" class="profile-nav hidden">
+          <button class="btn btn-create" id="openCreatePostBtn">
+            <i class="fa-solid fa-plus"></i> New Post
+          </button>
+          <div class="profile-dropdown-wrapper">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" id="navAvatar" class="nav-avatar" alt="Profile Icon">
+            <div class="dropdown-menu" id="profileDropdown">
+              <div class="dropdown-header">
+                <p class="dropdown-name" id="dropdownName">User Name</p>
+                <p class="dropdown-email" id="dropdownEmail">user@gmail.com</p>
+              </div>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item" id="navMyProfileBtn">
+                <i class="fa-regular fa-user"></i> My Profile
+              </button>
+              <button class="dropdown-item danger" id="logoutBtn">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-layout">
+    <!-- Left Sidebar -->
+    <aside class="sidebar left-sidebar">
+      <nav class="sidebar-menu">
+        <button class="sidebar-item active" id="menuHome">
+          <i class="fa-solid fa-house"></i> <span>Feed</span>
+        </button>
+        <button class="sidebar-item" id="menuMyProfile">
+          <i class="fa-solid fa-circle-user"></i> <span>My Profile</span>
+        </button>
+        <button class="sidebar-item" id="menuExplore">
+          <i class="fa-solid fa-compass"></i> <span>Explore Creators</span>
+        </button>
+      </nav>
+
+      <!-- Quick User Card Widget -->
+      <div id="sidebarUserCard" class="user-card-widget hidden">
+        <div class="widget-avatar-wrapper">
+          <img src="" id="sidebarAvatar" alt="User Avatar">
+        </div>
+        <h4 id="sidebarName">User Name</h4>
+        <p class="user-email" id="sidebarEmail"><i class="fa-regular fa-envelope"></i> user@gmail.com</p>
+        <p class="user-bio" id="sidebarBio">User bio goes here...</p>
+        <div class="user-stats-row">
+          <div class="stat-box">
+            <strong id="sidebarPostsCount">0</strong>
+            <span>Posts</span>
+          </div>
+          <div class="stat-box">
+            <strong id="sidebarFollowersCount">0</strong>
+            <span>Followers</span>
+          </div>
+          <div class="stat-box">
+            <strong id="sidebarFollowingCount">0</strong>
+            <span>Following</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Center Feed Content -->
+    <section class="feed-container">
+      <!-- Create Post Trigger Card -->
+      <div class="create-post-card card" id="createPostTriggerCard">
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" id="composerAvatar" class="composer-avatar" alt="Avatar">
+        <input type="text" class="composer-input" id="quickPostInput" placeholder="What's on your mind? Share text, image or video..." readonly>
+        <button class="btn btn-primary btn-round" id="quickPostBtn"><i class="fa-solid fa-paper-plane"></i></button>
+      </div>
+
+      <!-- Feed Header Filter -->
+      <div class="feed-header">
+        <h2 id="feedTitle">Recent Posts</h2>
+        <span class="badge" id="feedBadge">Live Updates</span>
+      </div>
+
+      <!-- Posts List Stream -->
+      <div id="postsStream" class="posts-stream">
+        <!-- Posts dynamically rendered here -->
+        <div class="loading-spinner">
+          <i class="fa-solid fa-circle-notch fa-spin"></i>
+          <p>Loading community posts...</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Profile View Modal -->
+  <div class="modal" id="profileModal">
+    <div class="modal-content glass-card profile-modal-content">
+      <button class="modal-close" id="closeProfileModal"><i class="fa-solid fa-xmark"></i></button>
+      
+      <div class="profile-header-banner">
+        <div class="profile-avatar-container">
+          <img src="" id="profileModalAvatar" alt="Profile Icon">
+        </div>
+      </div>
+
+      <div class="profile-body">
+        <h2 id="profileModalName">Display Name</h2>
+        <!-- Gmail / Email displayed explicitly -->
+        <p class="profile-email-badge">
+          <i class="fa-solid fa-envelope"></i> <span id="profileModalEmail">account.gmail@gmail.com</span>
+        </p>
+        <p class="profile-bio" id="profileModalBio">Short bio details...</p>
+
+        <div class="profile-stats">
+          <div class="profile-stat-item">
+            <h3 id="profileModalPostsCount">0</h3>
+            <p>Posts</p>
+          </div>
+          <div class="profile-stat-item">
+            <h3 id="profileModalFollowersCount">0</h3>
+            <p>Followers</p>
+          </div>
+          <div class="profile-stat-item">
+            <h3 id="profileModalFollowingCount">0</h3>
+            <p>Following</p>
+          </div>
+        </div>
+
+        <div class="profile-actions" id="profileModalActions">
+          <!-- Follow / Unfollow / Edit Profile Button -->
+        </div>
+
+        <hr class="divider">
+        <h3>User Posts</h3>
+        <div id="profileUserPosts" class="posts-stream"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Post Modal -->
+  <div class="modal" id="createPostModal">
+    <div class="modal-content glass-card">
+      <button class="modal-close" id="closeCreatePostModal"><i class="fa-solid fa-xmark"></i></button>
+      <h2><i class="fa-solid fa-pen-to-square"></i> Upload New Post</h2>
+      
+      <form id="createPostForm">
+        <div class="form-group">
+          <textarea id="postContentInput" rows="4" placeholder="Share your thoughts, story or update..." required></textarea>
+        </div>
+
+        <!-- Media Attachment Options -->
+        <div class="media-tabs">
+          <button type="button" class="tab-btn active" data-tab="imageTab"><i class="fa-solid fa-image"></i> Image</button>
+          <button type="button" class="tab-btn" data-tab="videoTab"><i class="fa-solid fa-video"></i> Video</button>
+        </div>
+
+        <!-- Image URL tab -->
+        <div class="tab-content active" id="imageTab">
+          <div class="form-group">
+            <input type="url" id="postImageUrl" placeholder="Paste Image URL (e.g. https://images.unsplash.com/...)">
+          </div>
+        </div>
+
+        <!-- Video URL tab -->
+        <div class="tab-content" id="videoTab">
+          <div class="form-group">
+            <input type="url" id="postVideoUrl" placeholder="Paste Video URL (e.g. https://www.w3schools.com/html/mov_bbb.mp4)">
+          </div>
+        </div>
+
+        <!-- Live Media Preview Container -->
+        <div id="mediaPreviewBox" class="media-preview hidden"></div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" id="cancelCreatePost">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="publishPostBtn">
+            <i class="fa-solid fa-paper-plane"></i> Publish Post
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Comments Drawer Modal -->
+  <div class="modal" id="commentsModal">
+    <div class="modal-content glass-card comments-modal-content">
+      <button class="modal-close" id="closeCommentsModal"><i class="fa-solid fa-xmark"></i></button>
+      <h3><i class="fa-regular fa-comments"></i> Comments</h3>
+
+      <div id="commentsList" class="comments-list">
+        <!-- Comments rendered dynamically -->
+      </div>
+
+      <!-- Add Comment Form -->
+      <form id="addCommentForm" class="comment-form">
+        <input type="text" id="commentTextInput" placeholder="Write a comment..." required>
+        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i></button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Auth Modal (Signup & Login) -->
+  <div class="modal" id="authModal">
+    <div class="modal-content glass-card auth-modal-content">
+      <button class="modal-close" id="closeAuthModal"><i class="fa-solid fa-xmark"></i></button>
+
+      <!-- Login Form View -->
+      <div id="loginView">
+        <h2>Welcome Back</h2>
+        <p class="subtitle">Log in to your account to share posts, like, & follow.</p>
+
+        <form id="loginForm">
+          <div class="form-group">
+            <label><i class="fa-regular fa-envelope"></i> Gmail / Email</label>
+            <input type="email" id="loginEmail" placeholder="yourname@gmail.com" required>
+          </div>
+          <div class="form-group">
+            <label><i class="fa-solid fa-lock"></i> Password</label>
+            <input type="password" id="loginPassword" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Log In</button>
+        </form>
+
+        <p class="auth-switch">Don't have an account? <a href="#" id="switchToSignup">Sign Up</a></p>
+      </div>
+
+      <!-- Signup Form View -->
+      <div id="signupView" class="hidden">
+        <h2>Create Account</h2>
+        <p class="subtitle">Join our community today.</p>
+
+        <form id="signupForm">
+          <div class="form-group">
+            <label><i class="fa-regular fa-user"></i> Full Name</label>
+            <input type="text" id="signupName" placeholder="Alex Morgan" required>
+          </div>
+          <div class="form-group">
+            <label><i class="fa-regular fa-envelope"></i> Gmail / Email</label>
+            <input type="email" id="signupEmail" placeholder="alex.morgan@gmail.com" required>
+          </div>
+          <div class="form-group">
+            <label><i class="fa-solid fa-lock"></i> Password</label>
+            <input type="password" id="signupPassword" placeholder="Create a strong password" required>
+          </div>
+          <div class="form-group">
+            <label><i class="fa-solid fa-image"></i> Profile Icon URL (Optional)</label>
+            <input type="url" id="signupAvatar" placeholder="https://images.unsplash.com/...">
+          </div>
+          <div class="form-group">
+            <label><i class="fa-regular fa-comment-dots"></i> Bio</label>
+            <input type="text" id="signupBio" placeholder="Tell the world a bit about yourself...">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+        </form>
+
+        <p class="auth-switch">Already have an account? <a href="#" id="switchToLogin">Log In</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

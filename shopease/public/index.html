@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShopEase – Shop Smart</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header></header>
+  <main class="container">
+    <section class="hero">
+      <div>
+        <h1>Everyday things, <em>beautifully</em> simple.</h1>
+        <p>Handpicked electronics, fashion and home essentials. Fast delivery, easy returns.</p>
+        <a href="#products" class="btn">Shop now</a>
+      </div>
+      <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=900" alt="Store" />
+    </section>
+
+    <section id="products">
+      <div class="toolbar">
+        <input id="search" placeholder="Search products..." />
+        <div class="chips" id="chips"></div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </section>
+  </main>
+  <footer>© 2026 ShopEase · Built with Express.js & MySQL</footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    const cats = ['All', 'Electronics', 'Fashion', 'Home'];
+    let category = '', products = [];
+
+    function renderChips() {
+      $('#chips').innerHTML = cats.map(c =>
+        `<button class="chip ${(c === 'All' ? '' : c) === category ? 'active' : ''}" data-c="${c}">${c}</button>`).join('');
+      document.querySelectorAll('.chip').forEach(b => b.onclick = () => {
+        category = b.dataset.c === 'All' ? '' : b.dataset.c; renderChips(); load();
+      });
+    }
+
+    async function load() {
+      const q = encodeURIComponent($('#search').value);
+      try {
+        products = await api(`/products?search=${q}&category=${category}`);
+        $('#grid').innerHTML = products.length ? products.map(p => `
+          <div class="card">
+            <a href="product.html?id=${p.id}"><img src="${p.image}" alt="${p.name}" loading="lazy"></a>
+            <div class="card-body">
+              <span class="cat">${p.category}</span>
+              <a href="product.html?id=${p.id}"><h3>${p.name}</h3></a>
+              <span class="price">${money(p.price)}</span>
+              <button class="btn" onclick="addById(${p.id})">Add to cart</button>
+            </div>
+          </div>`).join('') : '<p class="empty">No products found.</p>';
+      } catch (e) { $('#grid').innerHTML = `<p class="empty">${e.message}</p>`; }
+    }
+    function addById(id) { Cart.add(products.find(p => p.id === id)); }
+
+    let t; $('#search').oninput = () => { clearTimeout(t); t = setTimeout(load, 300); };
+    renderChips(); load();
+  </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Orders – ShopEase</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header></header>
+  <main class="container" style="padding:40px 0 60px">
+    <h2 style="margin-bottom:20px">My Orders</h2>
+    <div id="list"></div>
+  </main>
+  <script src="js/app.js"></script>
+  <script>
+    if (!Auth.token) location.href = 'login.html?next=orders.html';
+    api('/orders').then(orders => {
+      $('#list').innerHTML = orders.length ? orders.map(o => `
+        <div class="panel order">
+          <div class="row"><strong>Order #${o.id}</strong><span class="status">${o.status}</span></div>
+          <p class="muted">${new Date(o.created_at).toLocaleString()} · ${o.address}</p>
+          ${o.items.map(i => `<div class="row"><span>${i.name} × ${i.quantity}</span><span>${money(i.price * i.quantity)}</span></div>`).join('')}
+          <div class="row"><strong>Total</strong><strong>${money(o.total)}</strong></div>
+        </div>`).join('') : '<p class="empty">No orders yet.</p>';
+    }).catch(e => toast(e.message));
+  </script>
+</body>
+</html>

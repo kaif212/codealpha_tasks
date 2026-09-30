@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Cart – ShopEase</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header></header>
+  <main class="container" id="root"></main>
+  <footer>© 2026 ShopEase</footer>
+  <script src="js/app.js"></script>
+  <script>
+    function render() {
+      const items = Cart.items;
+      if (!items.length) {
+        $('#root').innerHTML = `<div class="empty"><h2>Your cart is empty</h2><br><a class="btn" href="index.html">Start shopping</a></div>`;
+        return;
+      }
+      $('#root').innerHTML = `
+      <div class="cart-layout">
+        <div class="panel">
+          <h2>Shopping Cart</h2>
+          ${items.map(i => `
+            <div class="cart-item">
+              <img src="${i.image}" alt="${i.name}">
+              <div>
+                <strong>${i.name}</strong><br><span class="muted">${money(i.price)}</span>
+                <div class="qty" style="margin:8px 0 0">
+                  <button onclick="Cart.update(${i.id}, ${i.quantity - 1}); render()">−</button>
+                  <span>${i.quantity}</span>
+                  <button onclick="Cart.update(${i.id}, ${i.quantity + 1}); render()">+</button>
+                </div>
+              </div>
+              <div style="text-align:right">
+                <strong>${money(i.price * i.quantity)}</strong><br>
+                <button class="link-danger" onclick="Cart.remove(${i.id}); render()">Remove</button>
+              </div>
+            </div>`).join('')}
+        </div>
+        <div class="panel" style="align-self:start">
+          <h3>Order Summary</h3>
+          <div class="row"><span>Subtotal</span><span>${money(Cart.total)}</span></div>
+          <div class="row"><span>Delivery</span><span>Free</span></div>
+          <hr style="border:0;border-top:1px solid var(--line);margin:12px 0">
+          <div class="row"><strong>Total</strong><strong>${money(Cart.total)}</strong></div>
+          <textarea id="address" rows="3" placeholder="Delivery address" style="margin:14px 0"></textarea>
+          <button class="btn" style="width:100%" onclick="checkout()">Place order</button>
+        </div>
+      </div>`;
+    }
+
+    async function checkout() {
+      if (!Auth.token) { toast('Please login to place order'); return setTimeout(() => location.href = 'login.html?next=cart.html', 800); }
+      const address = $('#address').value.trim();
+      if (!address) return toast('Enter delivery address');
+      try {
+        const r = await api('/orders', { method: 'POST', body: JSON.stringify({
+          address, items: Cart.items.map(i => ({ productId: i.id, quantity: i.quantity })) }) });
+        Cart.clear();
+        toast('Order #' + r.orderId + ' placed!');
+        setTimeout(() => location.href = 'orders.html', 900);
+      } catch (e) { toast(e.message); }
+    }
+    render();
+  </script>
+</body>
+</html>
